@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link  href="./css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="header">
+	<h1>Simulateur de champ en fonction de la focale et de la distance au sujet</h1>
+
+	<div class="parameters">
+		<form onsubmit="onSubmit()">
+			<div class="parameter">
+				Focale <input type="number" name="focal" value="18" min="10" max="30"> mm 
+			</div>
+			<div class="parameter">
+				Distance du sujet: <input type="number" name="distance" value="50" min="30" max="200"> cm
+			</div>
+			<input type="submit" value="Submit">
+		</form>
+	</div>
+</div>
+
+
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_1VEFymtWGHpocRmbwr.jpg'></img>
+</div>
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_BKdCwDCl1I7LIMebwr.jpg'></img>
+</div>
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_r7ofYGSV0I57FeAbwr.jpg'></img>
+</div>
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_7Klc52HpOF2ocgRbwr.jpg'></img>
+</div>
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_yX5IljiMnIkYFombwr.jpg'></img>
+</div>
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_wYRFddsgZIkwt89bwr.jpg'></img>
+</div>
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_zLrTGmUb9cXlh8Zbwr.jpg'></img>
+</div>
+<div class="crop">
+	<img class="dixhuit" 
+	src='https://figure-production.s3.amazonaws.com/media/snapshots/Figure_3jmCWaCQ1sWZCnnbwr.jpg'></img>
+</div>
+
+
+
+</body>
+<script>
+
+function onSubmit(){
+	console.log("coucou")
+}
+
+function crop(ratio) {
+	var frameSize = 500.0;
+	var pictures = document.querySelectorAll(".crop img");
+	for(i=0; i<pictures.length; i++) {
+		var pictureSize = frameSize / ratio;
+		var margin =  (frameSize - pictureSize) / 2; 
+		var sign = (pictureSize - frameSize) > 0 ? "-" : ""
+	  pictures[i].style.width = pictureSize.toString() + "px";
+	  pictures[i].style.height = pictureSize.toString() + "px";
+		pictures[i].style['margin-top'] = margin.toString() + "px";
+		pictures[i].style['margin-left'] =  margin.toString() + "px";
+	}
+}
+
+/** Return view angle in Radian */
+function getAngle(f) {
+	return 2 * Math.atan(7.5 / f); 
+}
+
+/** Calculate the size ratio of the image for a different focal */
+function ratio(f) {
+	var alpha18 = getAngle(18); 
+	var alpha = getAngle(f);
+	return Math.tan(alpha) / Math.tan(alpha18)
+}
+
+
+</script>
+
+</html>
