@@ -1,0 +1,6 @@
+
+var app = require('../server');
+
+var server = app.listen(3030, function() {
+  console.log('Express server listening on port ' + server.address().port);
+});
