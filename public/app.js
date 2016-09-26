@@ -64,24 +64,39 @@ function getAngle(f) {
 }
 
 /** Calculate the size ratio of the image for a different focal */
-function ratio(f) {
+function ratio(f, d) {
 	var alpha18 = getAngle(18); 
 	var alpha = getAngle(f);
-	return Math.tan(alpha) / Math.tan(alpha18)
+	var d50 = 50;
+	d = d || d50;
+	return (Math.tan(alpha) * d) / (Math.tan(alpha18) * d50)
 }
 
 function rectangle(ratio) {
 	var originalSize = 1280.0;
-	var newSize = ratio * originalSize;
-	var x = (originalSize - newSize) / 2.0
-	var y = x;
-	var width = newSize;
-	var height = width;
-	return {
-		x: parseInt(x),
-		y: parseInt(y),
-		width: parseInt(width),
-		height: parseInt(height)
+	if (ratio >= 1) {
+		return { x: 0, y: 0, width: originalSize, height: originalSize };
+	} else {
+		var newSize = ratio * originalSize;
+		var x = (originalSize - newSize) / 2.0
+		var y = x;
+		var width = newSize;
+		var height = width;
+		return {
+			x: parseInt(x),
+			y: parseInt(y),
+			width: parseInt(width),
+			height: parseInt(height)
+		}
+	}
+}
+
+function padding(ratio) {
+	if (ratio <= 1) {
+		return 0;
+	} else {
+		var originalSize = 680.0;
+		return parseInt(originalSize * (ratio - 1.0))
 	}
 }
 
@@ -89,8 +104,9 @@ function rectangle(ratio) {
 var Picture = React.createClass({
 	render: function(){
 		var imgixHost = "http://figure-imgix.imgix.net/"
-		var url = imgixHost + this.props.name + "?w=600&h=600"  
-		url += "&rect=" + [this.props.x, this.props.y, this.props.width, this.props.height].toString();
+		var url = imgixHost + this.props.name + "?w=640&h=640"  
+		url += "&rect=" + [this.props.crop.x, this.props.crop.y, this.props.crop.width, this.props.crop.height].toString();
+		url += "&pad=" + parseInt(this.props.pad / 2.0) + "&bg=CCCCCC"
 		url += "&txtsize=30&txtfont64=RnV0dXJhIENvbmRlbnNlZCBNZWRpdW0&txtclr=fff&txtalign=left&txt=" + this.props.text;
 		return (
 				<img src={url}></img>
@@ -100,36 +116,82 @@ var Picture = React.createClass({
 
 var PictureRow = React.createClass({
 	render: function(){
-		var rect20 = rectangle(ratio(20));
-		var rect22 = rectangle(ratio(22));
-		var rect24 = rectangle(ratio(24));
+
+		var ratio18 = ratio(18, this.props.distance);
+		var ratio20 = ratio(20, this.props.distance);
+		var ratio22 = ratio(22, this.props.distance);
+		var ratio24 = ratio(24, this.props.distance);
+
+		var rect18 = rectangle(ratio18);
+		var rect20 = rectangle(ratio20);
+		var rect22 = rectangle(ratio22);
+		var rect24 = rectangle(ratio24);
+
+		var padding18 = padding(ratio18);
+		var padding20 = padding(ratio20);
+		var padding22 = padding(ratio22);
+		var padding24 = padding(ratio24); 
+
 		return (
 			<div className="section group">
 				<div className="col span_1_of_4">
-					<Picture name={this.props.picture} x={0} y={0} width={1280} height={1280} text="18mm"/>
+					<Picture name={this.props.picture} crop={rect18} pad={padding18} text={"f=18mm" + " d=" + this.props.distance + "cm"}/>
 				</div>
 				<div className="col span_1_of_4">
-					<Picture name={this.props.picture} x={rect20.x} y={rect20.y} width={rect20.width} height={rect20.height} text="20mm"/>
+					<Picture name={this.props.picture} crop={rect20} pad={padding20} text={"f=20mm" + " d=" + this.props.distance + "cm"}/>
 				</div>
 				<div className="col span_1_of_4">
-					<Picture name={this.props.picture} x={rect22.x} y={rect22.y} width={rect22.width} height={rect22.height}  text="22mm"/>
+					<Picture name={this.props.picture} crop={rect22} pad={padding22} text={"f=22mm" + " d=" + this.props.distance + "cm"}/>
 				</div>
 				<div className="col span_1_of_4">
-					<Picture name={this.props.picture} x={rect24.x} y={rect24.y} width={rect24.width} height={rect24.height}  text="24mm"/>
+					<Picture name={this.props.picture} crop={rect24} pad={padding24} text={"f=24mm" + " d=" + this.props.distance + "cm"}/>
 				</div>
 			</div>
 		)
 	}
 })
 
-var App = React.createClass({
-	render: function(){
-		return (
-			<div className="section group">
-				{this.props.pictures.map(function(picture, i){
-					return <PictureRow picture={picture} key={i}/>;
-				})}
+var Input = React.createClass({
 
+	handleDistanceChange: function(e) {
+		var newValue = e.target.value
+		if (newValue < 200 && newValue > 30) {
+			this.props.handleDistanceChange(newValue)
+		}
+	},
+
+	render: function(){
+		return(
+			<div className="parameter">
+				Distance du sujet: 
+				<input type="number" name="distance" onChange={this.handleDistanceChange} defaultValue="50" min="30" max="200" /> cm
+			</div>
+		)
+	}
+
+})
+
+var App = React.createClass({
+
+  getInitialState: function() {
+    return { distance: 50 };
+  },
+
+  handleDistanceChange: function(v) {
+  	console.log("change")
+  	this.setState({distance: parseInt(v)})
+  },
+
+	render: function(){
+		var _this = this;
+		return (
+			<div>
+				<Input handleDistanceChange={this.handleDistanceChange}/>
+				<div className="section group">
+					{this.props.pictures.map(function(picture, i){
+						return <PictureRow picture={picture} distance={_this.state.distance} key={i}/>;
+					})}
+				</div>
 			</div>
 		)
 	}
