@@ -95,7 +95,7 @@ function padding(ratio) {
 	if (ratio <= 1) {
 		return 0;
 	} else {
-		var originalSize = 680.0;
+		var originalSize = (1280.0 / 2.0) / 2.0;
 		return parseInt(originalSize * (ratio - 1.0))
 	}
 }
@@ -106,7 +106,7 @@ var Picture = React.createClass({
 		var imgixHost = "http://figure-imgix.imgix.net/"
 		var url = imgixHost + this.props.name + "?w=640&h=640"  
 		url += "&rect=" + [this.props.crop.x, this.props.crop.y, this.props.crop.width, this.props.crop.height].toString();
-		url += "&pad=" + parseInt(this.props.pad / 2.0) + "&bg=CCCCCC"
+		url += "&pad=" + parseInt(this.props.pad) + "&bg=CCCCCC"
 		url += "&txtsize=30&txtfont64=RnV0dXJhIENvbmRlbnNlZCBNZWRpdW0&txtclr=fff&txtalign=left&txt=" + this.props.text;
 		return (
 				<img src={url}></img>
@@ -119,32 +119,38 @@ var PictureRow = React.createClass({
 
 		var ratio18 = ratio(18, this.props.distance);
 		var ratio20 = ratio(20, this.props.distance);
-		var ratio22 = ratio(22, this.props.distance);
 		var ratio24 = ratio(24, this.props.distance);
+		var ratio28 = ratio(28, this.props.distance);
+		var ratio35 = ratio(35, this.props.distance);
 
 		var rect18 = rectangle(ratio18);
 		var rect20 = rectangle(ratio20);
-		var rect22 = rectangle(ratio22);
 		var rect24 = rectangle(ratio24);
+		var rect28 = rectangle(ratio28);
+		var rect35 = rectangle(ratio35);
 
 		var padding18 = padding(ratio18);
 		var padding20 = padding(ratio20);
-		var padding22 = padding(ratio22);
-		var padding24 = padding(ratio24); 
+		var padding24 = padding(ratio24);
+		var padding28 = padding(ratio28);
+		var padding35 = padding(ratio35);
 
 		return (
 			<div className="section group">
-				<div className="col span_1_of_4">
+				<div className="col span_1_of_5">
 					<Picture name={this.props.picture} crop={rect18} pad={padding18} text={"f=18mm" + " d=" + this.props.distance + "cm"}/>
 				</div>
-				<div className="col span_1_of_4">
+				<div className="col span_1_of_5">
 					<Picture name={this.props.picture} crop={rect20} pad={padding20} text={"f=20mm" + " d=" + this.props.distance + "cm"}/>
 				</div>
-				<div className="col span_1_of_4">
-					<Picture name={this.props.picture} crop={rect22} pad={padding22} text={"f=22mm" + " d=" + this.props.distance + "cm"}/>
-				</div>
-				<div className="col span_1_of_4">
+				<div className="col span_1_of_5">
 					<Picture name={this.props.picture} crop={rect24} pad={padding24} text={"f=24mm" + " d=" + this.props.distance + "cm"}/>
+				</div>
+				<div className="col span_1_of_5">
+					<Picture name={this.props.picture} crop={rect28} pad={padding28} text={"f=28mm" + " d=" + this.props.distance + "cm"}/>
+				</div>
+				<div className="col span_1_of_5">
+					<Picture name={this.props.picture} crop={rect35} pad={padding35} text={"f=35mm" + " d=" + this.props.distance + "cm"}/>
 				</div>
 			</div>
 		)

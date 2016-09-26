@@ -33,6 +33,16 @@
 	width: 23.8%;
 }
 
+/* GRID OF FIVE */
+.span_1_of_5 {
+	width: 18.7%;
+}
+
+/* GRID OF SIX */
+.span_1_of_6 {
+	width: 15.3%;
+}
+
 /*  GO FULL WIDTH AT LESS THAN 480 PIXELS */
 
 @media only screen and (max-width: 480px) {
