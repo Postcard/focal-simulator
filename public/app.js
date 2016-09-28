@@ -58,15 +58,15 @@ var pictures = [
 	"Figure_ooESNvUmMUnwCKbbwr.jpg",
 ]
 
-/** Return view angle in Radian */
+/** Return the view angle in Radian */
 function getAngle(f) {
 	return 2 * Math.atan(7.5 / f); 
 }
 
 /** Calculate the size ratio of the image for a different focal */
 function ratio(f, d) {
-	var alpha18 = getAngle(18); 
-	var alpha = getAngle(f);
+	var alpha18 = getAngle(18) / 2.0; 
+	var alpha = getAngle(f) / 2.0;
 	var d50 = 50;
 	d = d || d50;
 	return (Math.tan(alpha) * d) / (Math.tan(alpha18) * d50)
