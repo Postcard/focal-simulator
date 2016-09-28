@@ -114,14 +114,28 @@ var Picture = React.createClass({
 	}
 })
 
-var PictureRow = React.createClass({
+var GlassSize = React.createClass({
 	render: function(){
+		var size = 4 + parseInt((this.props.lensToFace - 50) / 2 * Math.tan(this.props.angle / 2.0));
+		return <div> vitre = {size} cm </div>
+	}
+})
 
-		var ratio18 = ratio(18, this.props.distance);
-		var ratio20 = ratio(20, this.props.distance);
-		var ratio24 = ratio(24, this.props.distance);
-		var ratio28 = ratio(28, this.props.distance);
-		var ratio35 = ratio(35, this.props.distance);
+var MirrorSize = React.createClass({
+	render: function(){
+		var size = 4 + parseInt((this.props.lensToMirror) / 2 * Math.tan(this.props.angle / 2.0))
+		return <div> miroir = {size} cm</div>
+	}
+})
+
+var PictureRow = React.createClass({
+	
+	render: function(){
+		var ratio18 = ratio(18, this.props.lensToFace);
+		var ratio20 = ratio(20, this.props.lensToFace);
+		var ratio24 = ratio(24, this.props.lensToFace);
+		var ratio28 = ratio(28, this.props.lensToFace);
+		var ratio35 = ratio(35, this.props.lensToFace);
 
 		var rect18 = rectangle(ratio18);
 		var rect20 = rectangle(ratio20);
@@ -138,39 +152,96 @@ var PictureRow = React.createClass({
 		return (
 			<div className="section group">
 				<div className="col span_1_of_5">
-					<Picture name={this.props.picture} crop={rect18} pad={padding18} text={"f=18mm" + " d=" + this.props.distance + "cm"}/>
+					<Picture name={this.props.picture} crop={rect18} pad={padding18} text={"f=18mm" + " d=" + this.props.lensToFace + "cm"}/>
+					<GlassSize angle={getAngle(18)} lensToFace={this.props.lensToFace}/>
+					{this.props.hasMirror 
+						? <MirrorSize angle={getAngle(18)} lensToMirror={this.props.lensToMirror}/>
+						: null
+					}
 				</div>
 				<div className="col span_1_of_5">
-					<Picture name={this.props.picture} crop={rect20} pad={padding20} text={"f=20mm" + " d=" + this.props.distance + "cm"}/>
+					<Picture name={this.props.picture} crop={rect20} pad={padding20} text={"f=20mm" + " d=" + this.props.lensToFace + "cm"}/>
+					<GlassSize angle={getAngle(20)} lensToFace={this.props.lensToFace}/>
+					{this.props.hasMirror 
+						? <MirrorSize angle={getAngle(20)} lensToMirror={this.props.lensToMirror}/>
+						: null
+					}
 				</div>
 				<div className="col span_1_of_5">
-					<Picture name={this.props.picture} crop={rect24} pad={padding24} text={"f=24mm" + " d=" + this.props.distance + "cm"}/>
+					<Picture name={this.props.picture} crop={rect24} pad={padding24} text={"f=24mm" + " d=" + this.props.lensToFace + "cm"}/>
+					<GlassSize angle={getAngle(24)} lensToFace={this.props.lensToFace}/>
+					{this.props.hasMirror 
+						? <MirrorSize angle={getAngle(24)} lensToMirror={this.props.lensToMirror}/>
+						: null
+					}
 				</div>
 				<div className="col span_1_of_5">
-					<Picture name={this.props.picture} crop={rect28} pad={padding28} text={"f=28mm" + " d=" + this.props.distance + "cm"}/>
+					<Picture name={this.props.picture} crop={rect28} pad={padding28} text={"f=28mm" + " d=" + this.props.lensToFace + "cm"}/>
+					<GlassSize angle={getAngle(28)} lensToFace={this.props.lensToFace}/>
+					{this.props.hasMirror 
+						? <MirrorSize angle={getAngle(28)} lensToMirror={this.props.lensToMirror}/>
+						: null
+					}
 				</div>
 				<div className="col span_1_of_5">
-					<Picture name={this.props.picture} crop={rect35} pad={padding35} text={"f=35mm" + " d=" + this.props.distance + "cm"}/>
+					<Picture name={this.props.picture} crop={rect35} pad={padding35} text={"f=35mm" + " d=" + this.props.lensToFace + "cm"}/>
+					<GlassSize angle={getAngle(35)} lensToFace={this.props.lensToFace}/>
+					{this.props.hasMirror 
+						? <MirrorSize angle={getAngle(35)} lensToMirror={this.props.lensToMirror}/>
+						: null
+					}
 				</div>
 			</div>
 		)
 	}
 })
 
-var Input = React.createClass({
 
-	handleDistanceChange: function(e) {
-		var newValue = e.target.value
-		if (newValue < 200 && newValue > 30) {
-			this.props.handleDistanceChange(newValue)
-		}
+var LensToFaceInput = React.createClass({
+
+	handleChange: function(e){
+		this.props.handleChange(e.target.value);
+	},
+
+	render: function() {
+		return(
+			<div className="parameter">
+				Distance entre l'objectif et le visage:   
+				<input type="number" name="lensToFace" onChange={this.handleChange} defaultValue={this.props.value} min="30" max="200" /> cm
+				<div className="error">{ this.props.error ? this.props.error : null }</div> 
+			</div>
+		)
+	}
+});
+
+var HasMirrorCheckBox = React.createClass({
+
+	toggleChange: function(e) {
+		this.props.toggleChange(e.target.checked);
 	},
 
 	render: function(){
-		return(
+		return (
 			<div className="parameter">
-				Distance du sujet: 
-				<input type="number" name="distance" onChange={this.handleDistanceChange} defaultValue="50" min="30" max="200" /> cm
+				Avec miroir ? <input type="checkbox" onChange={this.toggleChange} checked={this.props.checked}/>
+			</div>
+		)
+	}
+
+});
+
+var LensToMirrorInput = React.createClass({
+
+	handleChange: function(e){
+		this.props.handleChange(e.target.value);
+	},
+
+	render: function(){
+		return (
+			<div className="parameter">
+				Distance entre l'objectif et le miroir: 
+				<input type="number" name="lensToMirror "onChange={this.handleChange} defaultValue={this.props.value} min="0" max="60" /> cm
+				<div className="error">{this.props.error ? this.props.error : null}</div>
 			</div>
 		)
 	}
@@ -180,22 +251,78 @@ var Input = React.createClass({
 var App = React.createClass({
 
   getInitialState: function() {
-    return { distance: 50 };
+    return { 
+    	lensToFace: 50, 
+    	lensToFaceError: '',
+    	hasMirror: false,
+    	lensToMirror: 0,
+    	lensToMirrorError: ''
+	 	};
   },
 
-  handleDistanceChange: function(v) {
-  	console.log("change")
-  	this.setState({distance: parseInt(v)})
+  handleLensToFaceChange: function(v) {
+  	if (v >= 50 && v < 150) {
+  		this.setState({lensToFace: parseInt(v), lensToFaceError: ''});  
+  		if (v >= 60) {
+  			this.setState({lensToMirror: (v - 50) / 2.0})
+  		}		
+  	} else {
+  		var error = "La distance entre l'objectif et le visage doit être compris entre 50cm et 150cm";
+  		this.setState({lensToFaceError: error});
+  	}
+  },
+
+  toggleHasMirrorChange: function(v) {
+  	this.setState({hasMirror: v});
+  },
+
+  handleLensToMirrorChange: function(v) {
+  	if (v >= 0 && v < this.state.lensToFace - 50) {
+  		this.setState({lensToMirror: v, lensToMirrorError: ''});  		
+  	} else {
+  		var error = "La distance entre l'objectif et le miroir doit être compris entre 0 et " + (this.state.lensToFace - 50) + " cm"
+  		this.setState({lensToMirrorError: error})
+  	}
   },
 
 	render: function(){
 		var _this = this;
 		return (
 			<div>
-				<Input handleDistanceChange={this.handleDistanceChange}/>
+				<LensToFaceInput 
+					value={this.state.lensToFace} 
+					error={this.state.lensToFaceError}
+					handleChange={this.handleLensToFaceChange}
+				/>
+				{this.state.lensToFace >= 60 
+					?
+					<div>
+						<HasMirrorCheckBox
+							checked={this.state.hasMirror}
+							toggleChange={this.toggleHasMirrorChange}
+						/>
+						<div>
+						{_this.state.hasMirror
+							?
+								<LensToMirrorInput
+									value={_this.state.lensToMirror}
+									error={_this.state.lensToMirrorError}
+									handleChange={_this.handleLensToMirrorChange}
+								/> 
+							: null
+						}
+						</div>
+					</div>
+					: null
+				}
 				<div className="section group">
 					{this.props.pictures.map(function(picture, i){
-						return <PictureRow picture={picture} distance={_this.state.distance} key={i}/>;
+						return <PictureRow 
+								picture={picture} 
+								lensToFace={_this.state.lensToFace} 
+								hasMirror={_this.state.hasMirror}
+								lensToMirror={_this.state.lensToMirror}
+								key={i}/>;
 					})}
 				</div>
 			</div>

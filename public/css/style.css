@@ -11,7 +11,9 @@
 	margin-bottom: 15px;
 }
 
-
+.error {
+	color: red;
+}
 
 img {
 	max-width:100%;
